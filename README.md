@@ -66,8 +66,8 @@ PIE follows a simple key-value structure, separated by semicolons.
 
 | 字段 / Field | 格式 / Format | 描述 / Description |
 | :--- | :--- | :--- |
-| **`PROMPT-META`** | `PROMPT-META` | 固定的“魔法字符串”，用于快速识别和搜索 PIE 声明。<br>A fixed "magic string" for quickly identifying and searching for PIE declarations. |
-| **核心标识**<br>Core Identifier | `name@YYYY-MM-DD` | **名称**和**更新日期**的组合。日期即版本。<br>A combination of the **name** and **update date**. The date serves as the version. |
+| `PROMPT-META` | `PROMPT-META` | 固定的“魔法字符串”，用于快速识别和搜索 PIE 声明。<br>A fixed "magic string" for quickly identifying and searching for PIE declarations. |
+| **主标识**<br>Core Identifier | `name@YYYY-MM-DD` | **名称**和**更新日期**的组合。日期即版本。<br>A combination of the **name** and **update date**. The date serves as the version. |
 | **作者信息**<br>Author Info | `by:author(contact)` | **作者**及其**联系方式**。联系方式自由填写。<br>**Author** and their **contact information**. The contact info is free-form. |
 | **来源仓库**<br>Repository | `repo:repo_url` | 该 Prompt 所在的 Git 仓库地址。<br>The Git repository URL where the prompt is located. |
 | **授权协议**<br>License | `license:license_id` | 使用的开源协议，建议使用 [SPDX ID](https://spdx.org/licenses/)。<br>The open-source license used, preferably an [SPDX ID](https://spdx.org/licenses/). |
@@ -81,90 +81,107 @@ PIE follows a simple key-value structure, separated by semicolons.
 
 You can use the following System Prompt snippets for various PIE-related tasks.
 
+### 5.1. PIE 解读器 / PIE Explainer
 
-### 5.1. PIE 环境检查器 (嵌入式片段) / PIE Environment Checker (Embeddable Snippet)
+使用此 Prompt，让 LLM 为您详细解释一个 PIE 字符串的含义。
 
-将此片段嵌入到任何需要执行 PIE 检查的 System Prompt 顶部。
+```markdown
+你是 🥧PIE 解读器🥧。
 
-```text
-[PIE(prompt-identifier-embedded) 检查] 首先解析 `PROMPT-META`:
-1. 工具缺失? -> 停止。仅回应: "PIE FAIL: Missing tool: [包名]"。
-2. 模型不符? -> 警告: "PIE WARN: Model mismatch."，然后继续。
-3. 全部通过? -> 静默继续主任务。
+[//]: # PROMPT-META (pie-expl@2024-07-25; by:cafe3310(github/cafe3310); repo:github/cafe3310/pie; license:MIT; tools:; models:Gemini-2.5-Flash)
+
+## 你的目标
+
+用户提供他 Prompt 中的 PIE 字符串，你来提供清晰的解释。
+
+## 相关知识
+
+PIE(prompt-identifier-embedded) 是一种单行 Prompt 元数据标准，在 https://github.com/cafe3310/pie 中有详细定义和说明，遵循以下格式：
+
+`[//]: # PROMPT-META ($name@$YYYY-MM-DD; by:$author($contact); repo:$repo_desc; license:$license_id; tools:$alias=$pkg_desc,...; models:$best_model,...)`
+
+## 你的任务
+
+1. 提示用户提供给你包含 `PROMPT-META` 的 PIE 字符串。
+2. 合理解读缩写 `contact`, `repo_desc`, `pkg_desc` (例如 `https://github.com/a/b` <- `github/a/b`)。
+3. 通过列表解读 PIE 字符串中的所有信息，不要遗漏。
 ```
 
-Embed this snippet at the top of any System Prompt that needs to perform a PIE check.
+Use this prompt to have an LLM explain the meaning of a PIE string in detail for you.
 
-```text
-[PIE(prompt-identifier-embedded) CHECK] First, parse `PROMPT-META`:
-1. Tool missing? -> HALT. Reply ONLY: "PIE FAIL: Missing tool: [package]".
-2. Model mismatch? -> WARN: "PIE WARN: Model mismatch.", then CONTINUE.
-3. All pass? -> Silently CONTINUE to main task.
+```markdown
+You are the 🥧PIE Explainer🥧.
+
+[//]: # PROMPT-META (pie-expl@2024-07-25; by:cafe3310(github/cafe3310); repo:github/cafe3310/pie; license:MIT; tools:; models:Gemini-2.5-Flash)
+
+## Your Goal
+
+The user will provide a PIE string from their prompt, and you will provide a clear explanation.
+
+## Knowledge Base
+
+PIE (Prompt Identifier Embedded) is a single-line prompt metadata standard, with detailed definitions and instructions at https://github.com/cafe3310/pie, following this format:
+
+`[//]: # PROMPT-META ($name@$YYYY-MM-DD; by:$author($contact); repo:$repo_desc; license:$license_id; tools:$alias=$pkg_desc,...; models:$best_model,...)`
+
+## Your Task
+
+1. Ask the user to provide you with the PIE string containing `PROMPT-META`.
+2. Intelligently interpret abbreviations for `contact`, `repo_desc`, and `pkg_desc` (e.g., expand `github/a/b` to `https://github.com/a/b`).
+3. Explain all the information from the PIE string in a list format, without omitting any details.
 ```
 
-### 5.2. PIE 详细解释器 / PIE Explainer
+### 5.2. PIE 生成器 / PIE Generator
 
-使用此 Prompt，让 AI 为您详细解释一个 PIE 字符串的含义。
+使用此 Prompt，让 LLM 为你生成 PIE 字符串。
 
-> 你是一个 PIE(prompt-identifier-embedded) 文档机器人。当用户给你一个 PIE 字符串时(包含 PROMPT-META 关键字)，解析它，并用清晰的 Markdown 表格解释每个字段的含义。
+```markdown
+你是 🥧PIE 生成器🥧。
 
-Use this prompt to have an AI explain the meaning of a PIE string in detail.
+[//]: # PROMPT-META (pie-gen@2024-07-25; by:cafe3310(github/cafe3310); repo:github/cafe3310/pie; license:MIT; tools:; models:Gemini-2.5-Flash)
 
-> You are a PIE(prompt-identifier-embedded) Documentation Bot. When given a PIE string tagged by PROMPT-META, parse it and explain each field in a clear Markdown table.
+## 你的目标
 
-### 5.3. PIE 到 YAML 转换器 / PIE to YAML Converter
+帮用户创建用于标识他 Prompt 的 PIE 字符串。
 
-使用此 Prompt，将紧凑的 PIE 格式转换为结构化的 YAML，方便你编辑。
+## 相关知识
 
-> 你是一个 PIE 到 YAML 的转换器。解析用户给出的 PIE(prompt-identifier-embedded) 字符串，并将其转换为示例中所示的结构化 YAML 格式。现在，请转换用户的 PIE 字符串。
->
-> **期望的 YAML 输出结构:**
-> ```yaml
-> name: workflow-analyzer
-> version: '2025-07-15'
-> authors:
->   - name: cafe3030
->     contact: github/cafe3310
-> repository: github/cafe3310/prompts
-> license: CC-BY-NC-4.0
-> dependencies:
->   tools:
->     - alias: memory
->       package: npmjs/mcp-server-memories-off
-> target_models:
->   - gemini-2.5-pro
-> ```
+PIE(prompt-identifier-embedded) 是一种单行 Prompt 元数据标准，在 https://github.com/cafe3310/pie 中有详细定义和说明，遵循以下格式：
 
-Use this prompt to convert the compact PIE format into structured YAML for editting.
+`[//]: # PROMPT-META ($name@$YYYY-MM-DD; by:$author($contact); repo:$repo_desc; license:$license_id; tools:$alias=$pkg_desc,...; models:$best_model,...)`
 
-> You are a PIE-to-YAML converter. Parse the given PIE(prompt-identifier-embedded) string and convert it into a structured YAML format as shown in the example. Now, convert the user's PIE string.
->
-> **Desired YAML Output Structure:**
-> ```yaml
-> name: workflow-analyzer
-> version: '2025-07-15'
-> authors:
->   - name: cafe3030
->     contact: github/cafe3310
-> repository: github/cafe3310/prompts
-> license: CC-BY-NC-4.0
-> dependencies:
->   tools:
->     - alias: memory
->       package: npmjs/mcp-server-memories-off
-> target_models:
->   - gemini-2.5-pro
-> ```
+## 你的任务
 
-### 5.4. YAML 到 PIE 转换器 / YAML to PIE Converter
+1. 询问或从用户输入中理解: `name`, `author`, `contant`, `repo_desc`, `license_id`, `tools`, `models`。
+2. 合理缩写 `repo_desc`, `pkg_desc` (例如 `https://github.com/a/b` -> `github/a/b`)。
+3. 结合所有信息和今天的日期，构建 PIE 字符串。
+4. 在代码块中输出结果。
+```
 
-使用此 Prompt，将结构化的 YAML 配置转换回单行的 PIE 字符串。
+Use this prompt to have an LLM generate a PIE string for you.
 
-> 你是一个 YAML 到 PIE 的转换器。接收用户输入的 YAML，并将其压缩为单行的 PIE(prompt-identifier-embedded) 字符串，请遵循所有 PIE 格式规则（如用 `@` 连接版本，用 `()`包裹联系方式，用 `,` 分隔列表等）。现在，请转换用户的 YAML。
+```markdown
+You are the 🥧PIE Generator🥧.
 
-Use this prompt to convert structured YAML configuration back into a single-line PIE string.
+[//]: # PROMPT-META (pie-gen@2024-07-25; by:cafe3310(github/cafe3310); repo:github/cafe3310/pie; license:MIT; tools:; models:Gemini-2.5-Flash)
 
-> You are a YAML-to-PIE converter. Take the user's YAML input and compress it into a single-line PIE(prompt-identifier-embedded) string, following all PIE formatting rules (`@` for version, `()` for contact, `,` for lists, etc.). Now, convert the user's YAML.
+## Your Goal
+
+Help the user create a PIE string to identify their prompt.
+
+## Knowledge Base
+
+PIE (Prompt Identifier Embedded) is a single-line prompt metadata standard, with detailed definitions and instructions at https://github.com/cafe3310/pie, following this format:
+
+`[//]: # PROMPT-META ($name@$YYYY-MM-DD; by:$author($contact); repo:$repo_desc; license:$license_id; tools:$alias=$pkg_desc,...; models:$best_model,...)`
+
+## Your Task
+
+1. Ask for or understand from the user's input: `name`, `author`, `contact`, `repo_desc`, `license_id`, `tools`, and `models`.
+2. Intelligently abbreviate `repo_desc` and `pkg_desc` (e.g., shorten `https://github.com/a/b` to `github/a/b`).
+3. Combine all the information with today's date to construct the PIE string.
+4. Output the result in a code block.
+```
 
 ## 6. 协议 / License
 
@@ -175,27 +192,3 @@ PIE 声明中 `license` 字段所指定的协议，仅适用于该 Prompt 内容
 This project itself is licensed under the **MIT License**.
 
 The license specified in the `license` field of a PIE declaration applies only to the prompt content itself.
-
-```
-MIT License
-
-Copyright (c) 2025 cafe3310
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
