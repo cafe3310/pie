@@ -1,4 +1,4 @@
-# Prompt Identifier Embedded (PIE)
+# Prompt Identifier Embedded (PIE) 🥧
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
