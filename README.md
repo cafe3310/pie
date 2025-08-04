@@ -24,11 +24,11 @@ Add this comment line to your System Prompt, after role assignment:
 
 ## 2. 这是什么？/ What is it?
 
-**PIE (Prompt Information Encoding)** 是一种旨在让 System Prompt 实现**自描述、可移植、可验证**的单行元数据规范。
+**PIE (Prompt Identifier Embedded)** 是一种旨在让 System Prompt 实现**自描述、可移植、可验证**的单行元数据规范。
 
 它通过一个简单、内联的 Markdown 注释，将 Prompt 的身份、版本、作者、依赖、许可等关键信息直接“嵌入”到 Prompt 本身，解决了 Prompt 在流转和协作过程中的信息孤岛问题。
 
-**PIE (Prompt Information Encoding)** is a single-line metadata standard designed to make System Prompts **self-describing, portable, and verifiable**.
+**PIE (Prompt Identifier Embedded)** is a single-line metadata standard designed to make System Prompts **self-describing, portable, and verifiable**.
 
 It embeds a prompt's critical metadata—identity, version, author, dependencies, license—directly within it using a simple inline Markdown comment, tackling the loss of origin and version data during sharing and collaboration.
 
